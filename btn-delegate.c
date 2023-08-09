@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "btn-delegate.h"
 #include "btn.h"
@@ -14,7 +15,7 @@ default__update(struct btn_delegate *d, struct btn *b)
 
 	def->elapsed += 10;
 	puts("== default ==");
-	printf("  -> update (data = %p, elapsed = %d)\n\n", def, def->elapsed);
+	printf("  --> update (data = %p, elapsed = %d)\n\n", def, def->elapsed);
 }
 
 static void
@@ -23,7 +24,7 @@ default__draw(struct btn_delegate *d, struct btn *b)
 	struct btn_delegate_default *def = BTN_DELEGATE_DEFAULT(d);
 
 	puts("== default ==");
-	printf(" --> draw (data = %p, animation = %d, title = %s)\n\n", def, def->animation, b->title);
+	printf("  --> draw (data = %p, animation = %d, title = %s)\n\n", def, def->animation, b->title);
 }
 
 static void
@@ -33,6 +34,26 @@ default__finish(struct btn_delegate *d, struct btn *b)
 
 	// forward to public function
 	btn_delegate_default_finish(def, b);
+}
+
+static void
+default__finish_free(struct btn_delegate *d, struct btn *b)
+{
+	struct btn_delegate_default *def = BTN_DELEGATE_DEFAULT(d);
+
+	// call default impl and then free.
+	btn_delegate_default_finish(def, b);
+	free(def);
+}
+
+void
+btn_delegate_default_new(struct btn *b)
+{
+	struct btn_delegate_default *ret;
+
+	ret = calloc(1, sizeof (*ret));
+	btn_delegate_default_init(ret, b);
+	ret->iface.finish = default__finish_free;
 }
 
 void

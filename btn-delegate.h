@@ -22,9 +22,15 @@ struct btn_delegate_default {
 	struct btn_delegate iface;
 };
 
+// dynamically allocate delegate to be stored as-is in the button.
+void
+btn_delegate_default_new(struct btn *);
+
+// public function to initialize the delegate.
 void
 btn_delegate_default_init(struct btn_delegate_default *, struct btn *);
 
+// public function to cleanup resources.
 void
 btn_delegate_default_finish(struct btn_delegate_default *, struct btn *);
 
